@@ -1,0 +1,26 @@
+CompileFlags:
+  CompilationDatabase: "./build"
+  Add:
+    - -xcuda
+    - --cuda-gpu-arch=sm_75
+  Remove: 
+    - "--generate-code*"
+    - "-gencode*"
+    - "--gpu-architecture*"
+    - "--gpu-code*"
+    - "-arch*"
+    - "--relocatable-device-code*"
+    - "--device-c"
+    - "--device-w"
+    - "-rdc*"
+    - "--extended-lambda"
+    - "--expt-extended-lambda"
+    - "--expt-relaxed-constexpr"
+    - "-forward-unknown-to-host-compiler"
+  Diagnostics:
+    Suppress:
+      - drv_unknown_argument
+      - drv_unsupported_opt
+
+
+
