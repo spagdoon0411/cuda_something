@@ -3,8 +3,14 @@
 
 // Kernel function to add the elements of two arrays
 __global__ void add(int n, float *x, float *y) {
-  for (int i = 0; i < n; i++)
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  int original_i = i;
+  int count = 0;
+  for (int stride = blockDim.x * gridDim.x; i < n; i += stride)
     y[i] = x[i] + y[i];
+
+  printf("Thread %d processed elements from %d to %d\n", threadIdx.x,
+         original_i, i - 1);
 }
 
 int processArguments(int argc, char *argv[]) {
