@@ -7,7 +7,15 @@ __global__ void add(int n, float *x, float *y) {
     y[i] = x[i] + y[i];
 }
 
-int main(void) {
+int processArguments(int argc, char *argv[]) {
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " <number_of_elements>" << std::endl;
+    return -1;
+  }
+  return atoi(argv[1]);
+}
+
+int main(int argc, char *argv[]) {
   int N = 1 << 20;
   float *x, *y;
 
@@ -21,8 +29,10 @@ int main(void) {
     y[i] = 2.0f;
   }
 
+  int numThreads = processArguments(argc, argv);
+
   // Run kernel on 1M elements on the GPU
-  add<<<1, 1>>>(N, x, y);
+  add<<<1, numThreads>>>(N, x, y);
 
   // Wait for GPU to finish before accessing on host
   cudaDeviceSynchronize();
