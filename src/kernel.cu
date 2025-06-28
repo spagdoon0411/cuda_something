@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   Tensor tens(shape, data, cpu);
 
   Device gpu = {gpuId, DeviceType::CUDA};
-  Tensor tens_gpu(shape, data, gpu);
+  tens.moveToDevice(gpu);
 
   return 0;
 }
