@@ -50,6 +50,9 @@ int main(int argc, char *argv[]) {
 
   Device gpu = {gpuId, DeviceType::CUDA};
   tens.moveToDevice(gpu);
+  printf("Tensor moved to GPU %d\n", gpuId);
+  tens.moveToDevice(cpu);
+  printf("Tensor moved back to CPU\n");
 
   return 0;
 }
