@@ -7,7 +7,7 @@ find_package(CUDAToolkit REQUIRED)
 message(STATUS "CUDAToolkit_INCLUDE_DIRS: ${CUDAToolkit_INCLUDE_DIRS}")
 message(STATUS "CUDAToolkit_LIBRARIES: ${CUDAToolkit_LIBRARIES}")
 
-add_executable(my_app src/kernel.cu)
+add_executable(my_app src/kernel.cu src/tensor.cpp)
 add_executable(list_devs src/list_devs.cu)
 
 cmake_policy(SET CMP0104 NEW)

@@ -1,0 +1,22 @@
+#ifndef TENSOR_HPP
+#define TENSOR_HPP
+
+#include "device.hpp"
+#include <cstddef>
+#include <vector>
+
+class Tensor {
+private:
+  const std::vector<size_t> shape;
+  float *data = nullptr;
+  struct Device device;
+
+public:
+  Tensor(const std::vector<size_t> &shape, float *data, struct Device device);
+  void moveToDevice(struct Device device);
+  const std::vector<size_t> &getShape() const;
+  void toDevice(struct Device device);
+  size_t getSize() const;
+};
+
+#endif // TENSOR_HPP

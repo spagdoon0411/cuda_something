@@ -1,3 +1,6 @@
+#include "tensor.hpp"
+#include <cstdlib>
+#include <cuda_runtime.h>
 #include <iostream>
 #include <math.h>
 
@@ -13,45 +16,37 @@ __global__ void add(int n, float *x, float *y) {
          original_i, i - 1);
 }
 
-int processArguments(int argc, char *argv[]) {
-  if (argc < 2) {
-    std::cerr << "Usage: " << argv[0] << " <number_of_elements>" << std::endl;
+// The ID of the first CUDA device
+int getGpuId() {
+  int deviceCount;
+  cudaError_t res = cudaGetDeviceCount(&deviceCount);
+
+  if ((res = cudaGetDeviceCount(&deviceCount)) != cudaSuccess) {
+    std::cerr << "Error getting device count: " << cudaGetErrorString(res)
+              << std::endl;
     return -1;
   }
-  return atoi(argv[1]);
+
+  if (deviceCount == 0) {
+    std::cerr << "No CUDA devices found." << std::endl;
+    return -1;
+  }
+
+  int gpuId = 0; // Default to the first GPU
+  cudaSetDevice(gpuId);
+  return gpuId;
 }
 
 int main(int argc, char *argv[]) {
-  int N = 1 << 20;
-  float *x, *y;
+  std::vector<size_t> shape = {3, 4};
 
-  // Allocate Unified Memory – accessible from CPU or GPU
-  cudaMallocManaged(&x, N * sizeof(float));
-  cudaMallocManaged(&y, N * sizeof(float));
+  // Get some CUDA devices
+  int gpuId = getGpuId();
+  printf("Using GPU ID: %d\n", gpuId);
 
-  // initialize x and y arrays on the host
-  for (int i = 0; i < N; i++) {
-    x[i] = 1.0f;
-    y[i] = 2.0f;
-  }
+  float *data = (float *)malloc(sizeof(float) * 12);
+  Device cpu = {0, DeviceType::CPU};
+  Tensor tens(shape, data, cpu);
 
-  int numThreads = processArguments(argc, argv);
-
-  // Run kernel on 1M elements on the GPU
-  add<<<1, numThreads>>>(N, x, y);
-
-  // Wait for GPU to finish before accessing on host
-  cudaDeviceSynchronize();
-
-  // Check for errors (all values should be 3.0f)
-  float maxError = 0.0f;
-  for (int i = 0; i < N; i++) {
-    maxError = fmax(maxError, fabs(y[i] - 3.0f));
-  }
-  std::cout << "Max error: " << maxError << std::endl;
-
-  // Free memory
-  cudaFree(x);
-  cudaFree(y);
   return 0;
 }
