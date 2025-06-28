@@ -19,7 +19,7 @@ __global__ void add(int n, float *x, float *y) {
 // The ID of the first CUDA device
 int getGpuId() {
   int deviceCount;
-  cudaError_t res = cudaGetDeviceCount(&deviceCount);
+  cudaError_t res;
 
   if ((res = cudaGetDeviceCount(&deviceCount)) != cudaSuccess) {
     std::cerr << "Error getting device count: " << cudaGetErrorString(res)
