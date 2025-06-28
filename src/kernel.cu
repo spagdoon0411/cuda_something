@@ -48,5 +48,8 @@ int main(int argc, char *argv[]) {
   Device cpu = {0, DeviceType::CPU};
   Tensor tens(shape, data, cpu);
 
+  Device gpu = {gpuId, DeviceType::CUDA};
+  Tensor tens_gpu(shape, data, gpu);
+
   return 0;
 }
