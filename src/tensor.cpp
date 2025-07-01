@@ -4,6 +4,19 @@
 #include <iostream>
 #include <vector>
 
+struct Device Tensor::getDevice() const {
+  return device;
+}
+
+float *Tensor::getData() const {
+  if (data == nullptr) {
+    // Unreachable if initializer sets data pointer
+    throw std::runtime_error("Data pointer is null.");
+  }
+
+  return data;
+}
+
 Tensor::Tensor(const std::vector<size_t> &shape, float *data,
                struct Device device)
     : shape(shape), data(data), device(device) {
