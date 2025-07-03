@@ -14,7 +14,7 @@ private:
 public:
   struct Device getDevice() const;
   float *getData() const;
-  Tensor(const std::vector<size_t> &shape, float *data, struct Device device);
+  Tensor(const std::vector<size_t> &shape, struct Device device);
   void moveToDevice(struct Device device);
   const std::vector<size_t> &getShape() const;
   void toDevice(struct Device device);

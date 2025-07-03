@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
   float *data = (float *)malloc(sizeof(float) * 12);
   Device cpu = {0, DeviceType::CPU};
-  Tensor tens(shape, data, cpu);
+  Tensor tens(shape, cpu);
 
   Device gpu = {gpuId, DeviceType::CUDA};
   tens.moveToDevice(gpu);

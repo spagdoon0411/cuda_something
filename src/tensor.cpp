@@ -17,23 +17,43 @@ float *Tensor::getData() const {
   return data;
 }
 
-Tensor::Tensor(const std::vector<size_t> &shape, float *data,
-               struct Device device)
-    : shape(shape), data(data), device(device) {
-  if (data == nullptr) {
-    throw std::invalid_argument("Data pointer cannot be null.");
-  }
-  if (shape.empty()) {
-    throw std::invalid_argument("Shape cannot be empty.");
-  }
-}
-
 size_t getDataSize(const std::vector<size_t> &shape) {
   size_t size = 1;
   for (size_t dim : shape) {
     size *= dim;
   }
   return size * sizeof(float); // Assuming float data type
+}
+
+Tensor::Tensor(const std::vector<size_t> &shape, struct Device device)
+    : shape(shape), device(device) {
+
+  if (shape.empty()) {
+    throw std::invalid_argument("Shape cannot be empty.");
+  }
+
+  switch (device.type) {
+  case DeviceType::CPU: {
+    float *cpuData = (float *)malloc(getDataSize(shape));
+
+    this->data = cpuData;
+    break;
+  }
+
+  case DeviceType::CUDA: {
+    float *gpuData = nullptr;
+    size_t dataSize = getDataSize(shape);
+
+    cudaError_t err = cudaMalloc(&gpuData, dataSize);
+    if (err != cudaSuccess) {
+      throw std::runtime_error("Failed to allocate memory on GPU: " +
+                               std::string(cudaGetErrorString(err)));
+    }
+
+    this->data = gpuData;
+    break;
+  }
+  }
 }
 
 void Tensor::moveToDevice(struct Device device) {
