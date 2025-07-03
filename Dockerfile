@@ -26,7 +26,6 @@ RUN apt-get update && apt-get install -y \
     wget \
     git \
     vim \
-    neovim \
     python3 \
     python3-pip \
     unzip \
