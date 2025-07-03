@@ -1,0 +1,2 @@
+- Run misc. steps to set up after Docker init using scripts/docker_setup.sh
+- Build and link googletest once in the Docker container using scripts/install_gtest.sh
