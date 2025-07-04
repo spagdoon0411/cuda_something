@@ -1,7 +1,9 @@
 #include "tensor.hpp"
 #include "device.hpp"
 #include <cuda_runtime.h>
+#include <errno.h>
 #include <iostream>
+#include <string.h>
 #include <vector>
 
 struct Device Tensor::getDevice() const {
@@ -70,15 +72,41 @@ void Tensor::moveToDevice(struct Device device) {
   case (DeviceType::CPU << 8) | DeviceType::CUDA: {
     size_t dataSize = getDataSize(shape);
     float *gpuData = nullptr;
-    cudaMalloc(&gpuData, dataSize);
-    cudaMemcpy(gpuData, this->data, dataSize, cudaMemcpyHostToDevice);
+
+    cudaError_t mallocStatus = cudaMalloc(&gpuData, dataSize);
+    if (mallocStatus != cudaSuccess) {
+      std::cerr << "cudaMalloc failed: " << cudaGetErrorString(mallocStatus)
+                << std::endl;
+      break;
+    }
+
+    cudaError_t memcpyStatus =
+        cudaMemcpy(gpuData, this->data, dataSize, cudaMemcpyHostToDevice);
+    if (memcpyStatus != cudaSuccess) {
+      std::cerr << "cudaMemcpy failed: " << cudaGetErrorString(memcpyStatus)
+                << std::endl;
+      cudaFree(gpuData); // Free allocated memory on failure
+      break;
+    }
+
     break;
   }
 
   case (DeviceType::CUDA << 8) | DeviceType::CPU: {
     std::cout << "Moving tensor from GPU to CPU." << std::endl;
     float *cpuData = (float *)malloc(dataSize);
-    cudaMemcpy(cpuData, this->data, dataSize, cudaMemcpyDeviceToHost);
+    if (cpuData == nullptr) {
+      std::string errorMsg = strerror(errno);
+      throw std::runtime_error("Failed to allocate memory on CPU: " + errorMsg);
+    }
+
+    cudaError_t res =
+        cudaMemcpy(cpuData, this->data, dataSize, cudaMemcpyDeviceToHost);
+    if (res != cudaSuccess) {
+      throw std::runtime_error("Failed to copy data from GPU to CPU: " +
+                               std::string(cudaGetErrorString(res)));
+    }
+
     break;
   }
 
