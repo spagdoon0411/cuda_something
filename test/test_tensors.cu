@@ -326,6 +326,4 @@ TEST(TestCuTensor, Sample) {
     cudaFree(C_d);
   if (work)
     cudaFree(work);
-
-  return 0;
 }
