@@ -12,8 +12,7 @@ struct Device Tensor::getDevice() const {
 
 float *Tensor::getData() const {
   if (data == nullptr) {
-    // Unreachable if initializer sets data pointer
-    throw std::runtime_error("Data pointer is null.");
+    throw std::runtime_error("Tensor data pointer is not set.");
   }
 
   return data;
@@ -38,6 +37,11 @@ Tensor::Tensor(const std::vector<size_t> &shape, struct Device device)
   case DeviceType::CPU: {
     float *cpuData = (float *)malloc(getDataSize(shape));
 
+    if (cpuData == nullptr) {
+      std::string errorMsg = strerror(errno);
+      throw std::runtime_error("Failed to allocate memory on CPU: " + errorMsg);
+    }
+
     this->data = cpuData;
     break;
   }
@@ -46,10 +50,16 @@ Tensor::Tensor(const std::vector<size_t> &shape, struct Device device)
     float *gpuData = nullptr;
     size_t dataSize = getDataSize(shape);
 
-    cudaError_t err = cudaMalloc(&gpuData, dataSize);
-    if (err != cudaSuccess) {
+    cudaError_t setDeviceRes = cudaSetDevice(device.id);
+    if (setDeviceRes != cudaSuccess) {
+      throw std::runtime_error("Failed to set CUDA device: " +
+                               std::string(cudaGetErrorString(setDeviceRes)));
+    }
+
+    cudaError_t cudaMallocRes = cudaMalloc(&gpuData, dataSize);
+    if (cudaMallocRes != cudaSuccess) {
       throw std::runtime_error("Failed to allocate memory on GPU: " +
-                               std::string(cudaGetErrorString(err)));
+                               std::string(cudaGetErrorString(cudaMallocRes)));
     }
 
     this->data = gpuData;
@@ -60,11 +70,14 @@ Tensor::Tensor(const std::vector<size_t> &shape, struct Device device)
 
 void Tensor::moveToDevice(struct Device device) {
   if (this->device.type == device.type && this->device.id == device.id) {
-    std::cout << "Tensor is already on the target device." << std::endl;
     return;
   }
 
   // (d1, d2): d1 -> d2
+  if (this->data == nullptr) {
+    throw std::runtime_error("Tensor data pointer is not set.");
+  }
+
   int pair = (this->device.type << 8) | device.type;
   size_t dataSize = getDataSize(shape);
 
@@ -73,9 +86,15 @@ void Tensor::moveToDevice(struct Device device) {
     size_t dataSize = getDataSize(shape);
     float *gpuData = nullptr;
 
-    cudaError_t mallocStatus = cudaMalloc(&gpuData, dataSize);
-    if (mallocStatus != cudaSuccess) {
-      std::cerr << "cudaMalloc failed: " << cudaGetErrorString(mallocStatus)
+    cudaError_t setDeviceRes = cudaSetDevice(device.id);
+    if (setDeviceRes != cudaSuccess) {
+      throw std::runtime_error("Failed to set CUDA device: " +
+                               std::string(cudaGetErrorString(setDeviceRes)));
+    }
+
+    cudaError_t mallocRes = cudaMalloc(&gpuData, dataSize);
+    if (mallocRes != cudaSuccess) {
+      std::cerr << "cudaMalloc failed: " << cudaGetErrorString(mallocRes)
                 << std::endl;
       break;
     }
