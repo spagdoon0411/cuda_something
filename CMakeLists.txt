@@ -7,6 +7,7 @@ find_package(CUDAToolkit REQUIRED)
 message(STATUS "CUDAToolkit_INCLUDE_DIRS: ${CUDAToolkit_INCLUDE_DIRS}")
 message(STATUS "CUDAToolkit_LIBRARIES: ${CUDAToolkit_LIBRARIES}")
 
+set(CUTENSOR_LIB "/usr/lib/aarch64-linux-gnu/libcutensor.so")
 
 # TODO: organize steps by targets not stage
 set(TEST_DIR "${CMAKE_SOURCE_DIR}/test")
@@ -22,9 +23,18 @@ add_executable(test_tensors
 cmake_policy(SET CMP0104 NEW)
 cmake_policy(SET CMP0074 NEW)
 
-target_link_libraries(test_tensors gtest gtest_main ${CUDAToolkit_LIBRARIES})
 target_link_libraries(list_devs ${CUDAToolkit_LIBRARIES})
-target_link_libraries(my_app ${CUDAToolkit_LIBRARIES})
+target_link_libraries(
+  test_tensors 
+  gtest 
+  gtest_main 
+  ${CUDAToolkit_LIBRARIES}
+  ${CUTENSOR_LIB}
+)
+target_link_libraries(my_app 
+  ${CUDAToolkit_LIBRARIES}
+  ${CUTENSOR_LIB}
+)
 
 target_include_directories(
   test_tensors PUBLIC "${CMAKE_SOURCE_DIR}/include"
