@@ -23,9 +23,11 @@ size_t getDataSize(const std::vector<size_t> &shape) {
   for (size_t dim : shape) {
     size *= dim;
   }
+
   return size * sizeof(float); // Assuming float data type
 }
 
+/// Allocates a new tensor with the specified shape, device
 Tensor::Tensor(const std::vector<size_t> &shape, struct Device device)
     : shape(shape), device(device) {
 
@@ -68,16 +70,18 @@ Tensor::Tensor(const std::vector<size_t> &shape, struct Device device)
   }
 }
 
+/// Moves the tensor to a different device, assuming one GPU device
+/// and one CPU device.
 void Tensor::moveToDevice(struct Device device) {
   if (this->device.type == device.type && this->device.id == device.id) {
     return;
   }
 
-  // (d1, d2): d1 -> d2
   if (this->data == nullptr) {
     throw std::runtime_error("Tensor data pointer is not set.");
   }
 
+  // device1 | device2 : device1 -> device2
   int pair = (this->device.type << 8) | device.type;
   size_t dataSize = getDataSize(shape);
 
@@ -140,7 +144,6 @@ void Tensor::moveToDevice(struct Device device) {
     throw std::invalid_argument("Unsupported device transfer.");
   }
 
-  // Update the internal state
   this->device = device;
 }
 
