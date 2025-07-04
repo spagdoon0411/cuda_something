@@ -112,6 +112,9 @@ void Tensor::moveToDevice(struct Device device) {
       break;
     }
 
+    free(this->data);
+    this->data = gpuData;
+
     break;
   }
 
@@ -129,6 +132,9 @@ void Tensor::moveToDevice(struct Device device) {
       throw std::runtime_error("Failed to copy data from GPU to CPU: " +
                                std::string(cudaGetErrorString(res)));
     }
+
+    cudaFree(this->data);
+    this->data = cpuData;
 
     break;
   }
