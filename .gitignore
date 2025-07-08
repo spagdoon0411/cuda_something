@@ -1,4 +1,36 @@
-/build
-/.cache
-/CMakeFiles
-Makefile
+# Build directories
+/build/
+/bin/
+/lib/
+/obj/
+
+# CMake generated files
+/CMakeFiles/
+/CMakeCache.txt
+/Makefile
+/Testing
+/install_manifest.txt
+/cmake_install.cmake
+
+# IDE-specific files
+/.vscode/
+/.idea/
+/*.swp
+/*.swo
+
+# CUDA-specific files
+*.cu.obj
+*.ptx
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# System-specific files
+.DS_Store
+Thumbs.db
+
+# Cache files
+/.cache/
+
