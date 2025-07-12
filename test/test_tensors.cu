@@ -48,6 +48,7 @@ int getGpuId() {
   return gpuId;
 }
 
+// Tests that we can allocate a tensor and move it between the CPU and the GPU.
 TEST(TestTensorAlloc, Size) {
   std::vector<size_t> shape = {3, 4};
 
@@ -90,7 +91,8 @@ TEST(TestTensorAlloc, Size) {
     }                                                                          \
   };
 
-// A sample from the cuTENSOR documentation
+// A sample from the cuTENSOR documentation.
+// Exiting nonzero causes the test to fail.
 TEST(TestCuTensor, Sample) {
   // Host element type definition
   typedef float floatTypeA;
