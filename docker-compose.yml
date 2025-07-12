@@ -29,3 +29,10 @@ services:
   cuda-dev-gpu:
     extends:
       service: cuda-dev-base
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
