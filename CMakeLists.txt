@@ -7,7 +7,7 @@ find_package(CUDAToolkit REQUIRED)
 message(STATUS "CUDAToolkit_INCLUDE_DIRS: ${CUDAToolkit_INCLUDE_DIRS}")
 message(STATUS "CUDAToolkit_LIBRARIES: ${CUDAToolkit_LIBRARIES}")
 
-set(CUTENSOR_LIB "/usr/lib/aarch64-linux-gnu/libcutensor.so")
+set(CUTENSOR_LIB "/usr/lib/x86_64-linux-gnu/libcutensor.so")
 
 # TODO: organize steps by targets not stage
 set(TEST_DIR "${CMAKE_SOURCE_DIR}/test")
