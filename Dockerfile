@@ -50,13 +50,10 @@ RUN apt-get update && apt-get install -y \
 
 # Clangd setup (respecting mason organization)
 RUN apt-get update && apt-get install -y clangd jq
-
-RUN cd /tmp && \
-    wget https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-arm64.tar.gz && \
-    tar -xzf nvim-linux-arm64.tar.gz && \
-    mv nvim-linux-arm64 /opt/nvim && \
-    ln -s /opt/nvim/bin/nvim /usr/local/bin/nvim && \
-    rm nvim-linux-arm64.tar.gz
+RUN add-apt-repository ppa:neovim-ppa/unstable && \
+    apt-get update && \
+    apt-get install -y neovim && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER dev
 
