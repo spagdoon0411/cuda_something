@@ -6,7 +6,6 @@ services:
       args:
         - NVIM_CONFIG_REPO=${NVIM_CONFIG_REPO:-https://github.com/spagdoon0411/nvim.git}
         - NVIM_CONFIG_BRANCH=main
-    container_name: cuda-dev-container
     image: nvidia/cuda:12.9.0-cudnn-runtime-ubuntu24.04
 
     environment:
@@ -22,11 +21,13 @@ services:
     user: dev
 
   cuda-dev:
+    container_name: cuda-dev-container
     extends:
       service: cuda-dev-base
       runtime: nvidia
 
   cuda-dev-gpu:
+    container_name: cuda-dev-gpu-container
     extends:
       service: cuda-dev-base
     deploy:
