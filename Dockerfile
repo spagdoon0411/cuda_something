@@ -45,11 +45,10 @@ RUN apt-get update && apt-get install -y \
     ghostscript \
     graphviz \
     unzip \
+    clangd \
+    jq \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-
-# Clangd setup (respecting mason organization)
-RUN apt-get update && apt-get install -y clangd jq
 RUN add-apt-repository ppa:neovim-ppa/unstable && \
     apt-get update && \
     apt-get install -y neovim && \
