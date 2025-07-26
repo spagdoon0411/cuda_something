@@ -1,5 +1,6 @@
 #include "tensor.hpp"
 #include "device.hpp"
+#include <cstdlib>
 #include <cuda_runtime.h>
 #include <errno.h>
 #include <iostream>
@@ -37,7 +38,7 @@ Tensor::Tensor(const std::vector<size_t> &shape, struct Device device)
 
   switch (device.type) {
   case DeviceType::CPU: {
-    float *cpuData = (float *)malloc(getDataSize(shape));
+    float *cpuData = (float *)std::malloc(getDataSize(shape));
 
     if (cpuData == nullptr) {
       std::string errorMsg = strerror(errno);
@@ -112,7 +113,7 @@ void Tensor::moveToDevice(struct Device device) {
       break;
     }
 
-    free(this->data);
+    std::free(this->data);
     this->data = gpuData;
 
     break;
@@ -120,7 +121,7 @@ void Tensor::moveToDevice(struct Device device) {
 
   case (DeviceType::CUDA << 8) | DeviceType::CPU: {
     std::cout << "Moving tensor from GPU to CPU." << std::endl;
-    float *cpuData = (float *)malloc(dataSize);
+    float *cpuData = (float *)std::malloc(dataSize);
     if (cpuData == nullptr) {
       std::string errorMsg = strerror(errno);
       throw std::runtime_error("Failed to allocate memory on CPU: " + errorMsg);
