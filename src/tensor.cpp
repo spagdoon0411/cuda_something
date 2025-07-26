@@ -155,3 +155,22 @@ void Tensor::moveToDevice(struct Device device) {
 }
 
 const std::vector<size_t> &Tensor::getShape() const { return shape; }
+
+size_t Tensor::getSize() const {
+  size_t size = 1;
+  for (size_t dim : shape) {
+    size *= dim;
+  }
+  return size;
+}
+
+// Destructor
+Tensor::~Tensor() {
+  if (this->data != nullptr) {
+    if (this->device.type == DeviceType::CUDA) {
+      cudaFree(this->data);
+    } else {
+      std::free(this->data);
+    }
+  }
+}

@@ -19,6 +19,7 @@ public:
   const std::vector<size_t> &getShape() const;
   void toDevice(struct Device device);
   size_t getSize() const;
+  ~Tensor();
 };
 
 #endif // TENSOR_HPP
