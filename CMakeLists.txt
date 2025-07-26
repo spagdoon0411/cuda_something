@@ -35,8 +35,12 @@ find_package(CUDAToolkit REQUIRED)
 message(STATUS "CUDAToolkit_INCLUDE_DIRS: ${CUDAToolkit_INCLUDE_DIRS}")
 message(STATUS "CUDAToolkit_LIBRARIES: ${CUDAToolkit_LIBRARIES}")
 
-# cuTENSOR Library
-set(CUTENSOR_LIB "/usr/lib/aarch64-linux-gnu/libcutensor.so")
+# cuTENSOR Library - use find_library to locate automatically
+find_library(CUTENSOR_LIB cutensor)
+if(NOT CUTENSOR_LIB)
+    message(FATAL_ERROR "Could not find libcutensor.so. Please install cuTENSOR.")
+endif()
+message(STATUS "Found cuTENSOR library: ${CUTENSOR_LIB}")
 
 # Google Test (for testing)
 find_package(GTest REQUIRED)
